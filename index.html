@@ -9,772 +9,105 @@
     <meta name="description" content="Watch live streams and movies on Crixzy">
     <meta property="og:title" content="Crixzy - Live Stream & Movies">
     <meta property="og:description" content="Join us to watch amazing content!">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: #000;
-            color: #fff;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 8px 15px;
-        }
-        
-        .container::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .container::-webkit-scrollbar-track {
-            background: #000;
-        }
-        
-        .container::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 3px;
-        }
-        
-        .container::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
-        
-        .alert-banner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 6px 12px;
-            text-align: center;
-            font-weight: 600;
-            font-size: 13px;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-            animation: slideDown 0.5s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .alert-banner::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            animation: shine 3s infinite;
-        }
-        
-        @keyframes slideDown {
-            from {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-        
-        @keyframes shine {
-            to {
-                left: 100%;
-            }
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        /* Channel Selector */
-        .channel-selector {
-            margin: 15px 0;
-            padding: 15px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        .channel-selector-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(102, 126, 234, 0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 8px;
-            max-height: 280px;
-            overflow-y: auto;
-            padding: 5px;
-        }
-        
-        .channel-grid::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .channel-grid::-webkit-scrollbar-track {
-            background: #1a1a1a;
-            border-radius: 3px;
-        }
-        
-        .channel-grid::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 3px;
-        }
-        
-        .channel-btn {
-            padding: 12px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #fff;
-            background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-            border: 2px solid transparent;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .channel-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-            border-radius: 50%;
-        }
-        
-        .channel-btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .channel-btn:hover {
-            transform: translateY(-2px);
-            border-color: #667eea;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .channel-btn.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-color: #764ba2;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                box-shadow: 0 4px 15px rgba(102, 126, 234, 0.6);
-            }
-            50% {
-                box-shadow: 0 6px 25px rgba(102, 126, 234, 0.8);
-            }
-        }
-        
-        .channel-btn-text {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .channel-viewers {
-            font-size: 10px;
-            opacity: 0.8;
-            color: #aaa;
-        }
-        
-        .channel-btn.active .channel-viewers {
-            color: #fff;
-        }
-        
-        .error-message {
-            padding: 12px;
-            background: rgba(220, 53, 69, 0.1);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            border-radius: 8px;
-            color: #ff6b6b;
-            font-size: 13px;
-            text-align: center;
-        }
-        
-        /* Player */
-        .player-wrapper {
-            margin: 8px 0;
-            animation: fadeIn 0.6s ease-out;
-        }
-        
-        .player-container {
-            position: relative;
-            width: 100%;
-            padding-bottom: 56.25%;
-            background: #111;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-        }
-        
-        .player-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .player-loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 10;
-        }
-        
-        .player-loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(102, 126, 234, 0.3);
-            border-top-color: #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 10px;
-        }
-        
-        .now-playing {
-            margin: 8px 0;
-            padding: 10px 15px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 8px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .now-playing-label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 4px;
-        }
-        
-        .now-playing-title {
-            font-size: 16px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        /* Share Section */
-        .share-section {
-            margin: 8px 0;
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        .share-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #e0e0e0;
-        }
-        
-        .share-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            justify-content: center;
-        }
-        
-        .share-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
-        }
-        
-        .share-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-        
-        .share-btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn-whatsapp {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
-        }
-        
-        .btn-telegram {
-            background: linear-gradient(135deg, #0088cc 0%, #005f8c 100%);
-        }
-        
-        .btn-copy {
-            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        }
-        
-        .social-icon {
-            width: 16px;
-            height: 16px;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        
-        /* Telegram Join */
-        .telegram-join {
-            margin: 8px 0;
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
-        
-        .telegram-join-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 10px 24px;
-            font-size: 14px;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(135deg, #0088cc 0%, #005f8c 100%);
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 136, 204, 0.4);
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        
-        .telegram-join-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0, 136, 204, 0.6);
-        }
-        
-        /* Search Section */
-        .search-section {
-            margin: 8px 0 10px 0;
-            padding: 15px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            animation: fadeIn 1.2s ease-out;
-        }
-        
-        .search-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .search-subtitle {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 12px;
-        }
-        
-        .search-btn {
-            padding: 10px 25px;
-            font-size: 14px;
-            font-weight: 700;
-            color: white;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 3px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .search-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-        }
-        
-        .search-btn:active {
-            transform: translateY(0);
-        }
-        
-        /* Footer */
-        .footer {
-            margin-top: 10px;
-            padding: 10px;
-            text-align: center;
-            color: #666;
-            font-size: 11px;
-            border-top: 1px solid #222;
-        }
-        
-        .icon {
-            font-size: 18px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 5px 10px;
-            }
-            
-            .channel-grid {
-                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
-                gap: 6px;
-            }
-            
-            .channel-btn {
-                padding: 10px 12px;
-                font-size: 12px;
-            }
-            
-            .share-buttons {
-                flex-direction: row;
-                gap: 5px;
-            }
-            
-            .share-btn {
-                flex: 1;
-                justify-content: center;
-                padding: 7px 12px;
-                font-size: 12px;
-            }
-            
-            .alert-banner {
-                font-size: 12px;
-                padding: 5px 8px;
-            }
-            
-            .telegram-join-btn {
-                padding: 8px 20px;
-                font-size: 13px;
-            }
-            
-            .search-section {
-                padding: 12px;
-            }
-            
-            .search-title {
-                font-size: 16px;
-            }
-            
-            .footer {
-                padding: 8px;
-                font-size: 10px;
-            }
-        }
-    </style>
+    <style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#000;color:#fff;overflow:hidden;height:100vh}.container{max-width:1400px;margin:0 auto;padding:8px 15px;height:calc(100vh - 30px);overflow-y:auto;overflow-x:hidden}.container::-webkit-scrollbar{width:6px}.container::-webkit-scrollbar-track{background:#000}.container::-webkit-scrollbar-thumb{background:#333;border-radius:3px}.container::-webkit-scrollbar-thumb:hover{background:#555}.alert-banner{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:6px 12px;text-align:center;font-weight:600;font-size:13px;box-shadow:0 4px 15px rgba(102,126,234,0.4);animation:slideDown 0.5s ease-out;position:relative;overflow:hidden}.alert-banner::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);animation:shine 3s infinite}@keyframes slideDown{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}@keyframes shine{to{left:100%}}.player-wrapper{margin:8px 0;animation:fadeIn 0.6s ease-out}@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}.player-container{position:relative;width:100%;padding-bottom:56.25%;background:#111;border-radius:8px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,0.5)}.player-container iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none}.share-section{margin:8px 0;animation:fadeIn 0.8s ease-out}.share-title{font-size:14px;font-weight:600;margin-bottom:8px;color:#e0e0e0}.share-buttons{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.share-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;font-size:13px;font-weight:600;color:white;border:none;border-radius:6px;cursor:pointer;transition:all 0.3s ease;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,0.3)}.share-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,0.4)}.share-btn:active{transform:translateY(0)}.btn-whatsapp{background:linear-gradient(135deg,#25D366 0%,#128C7E 100%)}.btn-telegram{background:linear-gradient(135deg,#0088cc 0%,#005f8c 100%)}.btn-copy{background:linear-gradient(135deg,#6c757d 0%,#495057 100%)}.social-icon{width:16px;height:16px;display:inline-block;vertical-align:middle}.telegram-join{margin:8px 0;text-align:center;animation:fadeIn 1s ease-out}.telegram-join-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 24px;font-size:14px;font-weight:700;color:white;background:linear-gradient(135deg,#0088cc 0%,#005f8c 100%);border:none;border-radius:50px;cursor:pointer;box-shadow:0 4px 20px rgba(0,136,204,0.4);transition:all 0.3s ease;text-decoration:none}.telegram-join-btn:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(0,136,204,0.6)}.search-section{margin:8px 0 10px 0;padding:15px;background:linear-gradient(135deg,#1a1a1a 0%,#2d2d2d 100%);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:fadeIn 1.2s ease-out}.search-title{font-size:18px;font-weight:700;margin-bottom:4px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}.search-subtitle{font-size:12px;color:#aaa;margin-bottom:12px}.search-btn{padding:10px 25px;font-size:14px;font-weight:700;color:white;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:none;border-radius:8px;cursor:pointer;transition:all 0.3s ease;box-shadow:0 3px 12px rgba(102,126,234,0.3)}.search-btn:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(102,126,234,0.5)}.search-btn:active{transform:translateY(0)}.quick-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;justify-content:center}.footer{margin-top:10px;padding:10px;text-align:center;color:#666;font-size:11px;border-top:1px solid #222}.icon{font-size:18px}@media (max-width:768px){.container{padding:5px 10px}.share-buttons{flex-direction:row;gap:5px}.share-btn{flex:1;justify-content:center;padding:7px 12px;font-size:12px}.alert-banner{font-size:12px;padding:5px 8px}.telegram-join-btn{padding:8px 20px;font-size:13px}.search-section{padding:12px}.search-title{font-size:16px}.footer{padding:8px;font-size:10px}}.lazy-load{opacity:0;transition:opacity 0.3s ease}.lazy-load.loaded{opacity:1}</style>
 </head>
 <body>
-    <div class="alert-banner">🎬 Share The Links With Your Friends & Enjoy Together! 🎉</div>
-    
+    <div class="alert-banner">🎬 Share The Links With Your Friends &amp; Enjoy Together! 🎉</div>
     <div class="container">
-        <!-- Channel Selector -->
-        <div class="channel-selector">
-            <div class="channel-selector-title">
-                <span>📺 Select Your Stream</span>
-                <span id="loadingIndicator" class="loading-spinner" style="display: none;"></span>
-            </div>
-            <div id="channelGrid" class="channel-grid">
-                <!-- Channels will be loaded here -->
-            </div>
-            <div id="errorMessage" class="error-message" style="display: none;"></div>
-        </div>
-        
-        <!-- Now Playing -->
-        <div id="nowPlaying" class="now-playing" style="display: none;">
-            <div class="now-playing-label">Now Playing</div>
-            <div class="now-playing-title" id="nowPlayingTitle">--</div>
-        </div>
-        
-        <!-- Player -->
         <div class="player-wrapper">
             <div class="player-container">
-                <div class="player-loading" id="playerLoading" style="display: none;">
-                    <div class="player-loading-spinner"></div>
-                    <div style="color: #888; font-size: 13px;">Loading stream...</div>
-                </div>
-                <iframe id="contentFrame" 
-                    src="" 
+                <!-- ============================================ -->
+                <!-- EDIT IFRAME URL BELOW -->
+                <!-- ============================================ -->
+                <iframe id="contentFrame" src="https://allroundersui.vercel.app/prame.html" 
                     loading="lazy" 
-                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture" 
-                    allowfullscreen>
-                </iframe>
+                    allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                <!-- ============================================ -->
             </div>
         </div>
-        
-        <!-- Share Section -->
         <div class="share-section">
             <div class="share-title">📤 Share This Stream</div>
             <div class="share-buttons">
-                <button class="share-btn btn-whatsapp" onclick="shareWhatsApp()">
+                <button class="share-btn btn-whatsapp" onclick="_0x4a8b12()">
                     <svg class="social-icon" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
                     WhatsApp
                 </button>
-                <button class="share-btn btn-telegram" onclick="shareTelegram()">
+                <button class="share-btn btn-telegram" onclick="_0x5c9d23()">
                     <svg class="social-icon" viewBox="0 0 24 24" fill="white"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
                     Telegram
                 </button>
-                <button class="share-btn btn-copy" onclick="copyLink()">
+                <button class="share-btn btn-copy" onclick="_0x7e1f34()">
                     <span class="icon">📋</span> Copy Link
                 </button>
             </div>
         </div>
-        
-        <!-- Telegram Join -->
         <div class="telegram-join">
             <a href="https://t.me/+OACGYQBHrIJmM2Y1" target="_blank" class="telegram-join-btn">
                 <span class="icon">🚀</span> Join Our Telegram Channel
             </a>
         </div>
-        
-        <!-- Search Section -->
         <div class="search-section">
-            <div class="search-title">🔍 Search & Watch Any Movie</div>
+            <div class="search-title">🔍 Search &amp; Watch Any Movie</div>
             <div class="search-subtitle">Discover thousands of movies and shows instantly</div>
             <a href="https://starry7c.github.io/search-movie/" target="_blank" style="text-decoration: none;">
                 <button class="search-btn" style="width: 100%; padding: 12px 25px; font-size: 15px;">
-                    🎬 Search Movies & TV Shows
+                    🎬 Search Movies &amp; TV Shows
                 </button>
             </a>
-            <div style="margin-top: 8px;">
-                <span style="color: #888; font-size: 11px; width: 100%; display: block; text-align: center;">✨ Click above to explore our complete movie library</span>
+            <div class="quick-links" style="margin-top: 8px;">
+                <span style="color: #888; font-size: 11px; width: 100%; display: block; margin-bottom: 4px;">✨ Click above to explore our complete movie library</span>
             </div>
         </div>
-        
-        <!-- Footer -->
         <div class="footer">
             <p style="margin: 0;">© 2024 Crixzy | Made with ❤️ for movie lovers</p>
             <p style="margin: 3px 0 0 0; font-size: 10px;">Join our community for latest updates and exclusive content</p>
         </div>
     </div>
-    
     <script>
-        // Configuration
-        const CHANNELS_JSON_URL = 'https://allrounderid.pages.dev/id.json';
-        const SHARE_TEXT = "Check out this amazing stream on Crixzy! 🎬";
+        // Obfuscated variables
+        var _0x8f2a = window.location.href;
+        var _0x9c3b = "Check out this amazing stream on Crixzy! 🎬";
         
-        // State
-        let channels = [];
-        let currentChannel = null;
-        
-        // DOM Elements
-        const channelGrid = document.getElementById('channelGrid');
-        const errorMessage = document.getElementById('errorMessage');
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        const contentFrame = document.getElementById('contentFrame');
-        const nowPlaying = document.getElementById('nowPlaying');
-        const nowPlayingTitle = document.getElementById('nowPlayingTitle');
-        const playerLoading = document.getElementById('playerLoading');
-        
-        // Load channels on page load
-        window.addEventListener('DOMContentLoaded', async () => {
-            await loadChannels();
-        });
-        
-        // Load channels from JSON
-        async function loadChannels() {
-            try {
-                loadingIndicator.style.display = 'inline-block';
-                errorMessage.style.display = 'none';
-                channelGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 20px;">Loading channels...</div>';
-                
-                const response = await fetch(CHANNELS_JSON_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                channels = data.iframes || [];
-                
-                if (channels.length === 0) {
-                    throw new Error('No channels found in JSON');
-                }
-                
-                renderChannels();
-                
-                // Load first channel by default
-                if (channels.length > 0) {
-                    loadChannel(channels[0]);
-                }
-                
-            } catch (error) {
-                console.error('Error loading channels:', error);
-                showError('Failed to load channels. Please refresh the page.');
-            } finally {
-                loadingIndicator.style.display = 'none';
-            }
+        // WhatsApp share function
+        function _0x4a8b12() {
+            var _0x1d4e = "https://wa.me/?text=" + encodeURIComponent(_0x9c3b + " " + _0x8f2a);
+            window.open(_0x1d4e, "_blank");
         }
         
-        // Render channel buttons
-        function renderChannels() {
-            channelGrid.innerHTML = '';
-            
-            channels.forEach(channel => {
-                const button = document.createElement('button');
-                button.className = 'channel-btn';
-                button.dataset.channelId = channel.id;
-                
-                button.innerHTML = `
-                    <div class="channel-btn-text">
-                        <span>${channel.name}</span>
-                    </div>
-                `;
-                
-                button.addEventListener('click', () => {
-                    loadChannel(channel);
-                    trackChannelHit(channel);
-                });
-                
-                channelGrid.appendChild(button);
-            });
+        // Telegram share function
+        function _0x5c9d23() {
+            var _0x2e5f = "https://t.me/share/url?url=" + encodeURIComponent(_0x8f2a) + "&text=" + encodeURIComponent(_0x9c3b);
+            window.open(_0x2e5f, "_blank");
         }
         
-        // Load a channel
-        function loadChannel(channel) {
-            if (!channel || !channel.iframeSrc) {
-                showError('Invalid channel data');
-                return;
-            }
-            
-            // Update active state
-            document.querySelectorAll('.channel-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            const activeButton = document.querySelector(`[data-channel-id="${channel.id}"]`);
-            if (activeButton) {
-                activeButton.classList.add('active');
-            }
-            
-            // Show loading state
-            playerLoading.style.display = 'flex';
-            
-            // Update current channel
-            currentChannel = channel;
-            
-            // Update now playing
-            nowPlaying.style.display = 'block';
-            nowPlayingTitle.textContent = channel.name;
-            
-            // Load iframe
-            contentFrame.src = channel.iframeSrc;
-            
-            // Hide loading after a delay
-            setTimeout(() => {
-                playerLoading.style.display = 'none';
-            }, 2000);
-            
-            // Update page title
-            document.title = `${channel.name} - Crixzy Live Stream`;
-        }
-        
-        // Track channel hit
-        async function trackChannelHit(channel) {
-            if (channel.hit) {
-                try {
-                    await fetch(channel.hit);
-                } catch (error) {
-                    console.error('Error tracking hit:', error);
-                }
-            }
-        }
-        
-        // Show error message
-        function showError(message) {
-            errorMessage.textContent = `❌ ${message}`;
-            errorMessage.style.display = 'block';
-            channelGrid.innerHTML = '';
-        }
-        
-        // Share functions
-        function shareWhatsApp() {
-            const url = window.location.href;
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(SHARE_TEXT + " " + url)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-        
-        function shareTelegram() {
-            const url = window.location.href;
-            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(SHARE_TEXT)}`;
-            window.open(telegramUrl, '_blank');
-        }
-        
-        function copyLink() {
-            const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                const button = event.target.closest('.share-btn');
-                const originalHTML = button.innerHTML;
-                button.innerHTML = '<span class="icon">✅</span> Copied!';
-                button.style.background = "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)";
-                
-                setTimeout(() => {
-                    button.innerHTML = originalHTML;
-                    button.style.background = "";
+        // Copy link function
+        function _0x7e1f34() {
+            navigator.clipboard.writeText(_0x8f2a).then(function() {
+                var _0x3g6h = event.target.closest(".share-btn");
+                var _0x4h7i = _0x3g6h.innerHTML;
+                _0x3g6h.innerHTML = '<span class="icon">✅</span> Copied!';
+                _0x3g6h.style.background = "linear-gradient(135deg, #28a745 0%, #1e7e34 100%)";
+                setTimeout(function() {
+                    _0x3g6h.innerHTML = _0x4h7i;
+                    _0x3g6h.style.background = "";
                 }, 2000);
-            }).catch(() => {
+            }).catch(function() {
                 alert("Failed to copy link. Please try again.");
             });
         }
         
-        // Handle iframe load errors
-        contentFrame.addEventListener('error', () => {
-            playerLoading.style.display = 'none';
-            showError('Failed to load stream. Please try another channel.');
+        // Telegram popup on load
+        if (confirm("Join Our Telegram Channel") == true) {
+            window.open("https://t.me/+OACGYQBHrIJmM2Y1", "_blank");
+        }
+        
+        // Lazy load iframe
+        document.addEventListener("DOMContentLoaded", function() {
+            var _0x5i8j = document.getElementById("contentFrame");
+            _0x5i8j.classList.add("lazy-load");
+            setTimeout(function() {
+                _0x5i8j.classList.add("loaded");
+            }, 100);
         });
     </script>
 </body>
