@@ -397,10 +397,10 @@
             });
             player.addEventListener("error", onPlayerErrorEvent);
             controls.addEventListener("error", onUIErrorEvent);
-            
-            const mpdUrl = 'https://live-pv-ta.amazon.fastly-edge.com/lhr-nitro/live/clients/dash/enc/wwrmho82pc/out/v1/d7130f460d41486ea7e8e3eb45f0522f/cenc.mpd';
-            const kid = 'baafdb8ebcbbc0655332291da6f121da';
-            const key = '60ac892e0ea0b2c46fc6837c97ed641a';
+           
+            const mpdUrl = 'https://bks02.starhubgo.com/bpk-token/1aa@i4a5m0w0d2tjlbrq4khifb4zu3shyhtwi2howuca/bpk-tv/HubSports5HD/output/manifest.mpd?bkm-query';
+            const kid = '14d1d427e8144c7b80cd5a8a6b9aa5e3';
+            const key = 'b3992507b4df8956717e3d5d798b7ab0';
             
             player.configure({ drm: { clearKeys: { [kid]: key } } });
             try {
